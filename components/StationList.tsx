@@ -12,9 +12,9 @@ interface StationListProps {
 export const StationList: React.FC<StationListProps> = ({ stations, currentStation, onSelect, isLoading }) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 animate-pulse">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="h-36 bg-white/20 rounded-2xl border border-white/40 shadow-sm"></div>
+          <div key={i} className="h-40 bg-white/20 rounded-3xl border border-white/40 shadow-sm"></div>
         ))}
       </div>
     );
@@ -22,9 +22,9 @@ export const StationList: React.FC<StationListProps> = ({ stations, currentStati
 
   if (stations.length === 0) {
     return (
-      <div className="text-center py-20 bg-white/30 rounded-3xl border border-white/50 backdrop-blur-sm">
-        <p className="text-xl font-medium text-stone-600 mb-2">No stations found.</p>
-        <p className="text-sm text-stone-500">Try searching for a genre, country, or specific station name.</p>
+      <div className="text-center py-32 bg-white/20 rounded-[2.5rem] border border-white/40 backdrop-blur-sm mx-auto max-w-2xl">
+        <p className="text-2xl font-bold text-stone-700 mb-3">No stations found</p>
+        <p className="text-base text-stone-500">Try a different search term to explore the airwaves.</p>
       </div>
     );
   }
@@ -40,7 +40,7 @@ export const StationList: React.FC<StationListProps> = ({ stations, currentStati
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
       {stations.map((station) => {
         const isActive = currentStation?.id === station.id;
         const logoUrl = getFaviconUrl(station.websiteUrl || station.streamUrl);
@@ -50,18 +50,18 @@ export const StationList: React.FC<StationListProps> = ({ stations, currentStati
             key={station.id}
             onClick={() => onSelect(station)}
             className={`
-              group relative p-5 rounded-2xl border cursor-pointer transition-all duration-300 overflow-hidden
+              group relative p-6 rounded-[2rem] border cursor-pointer transition-all duration-500
               ${isActive 
-                ? 'bg-white border-orange-400 ring-2 ring-orange-200 ring-offset-1 shadow-xl shadow-orange-500/10' 
-                : 'bg-white/60 hover:bg-white border-white/60 hover:border-orange-200/50 shadow-sm hover:shadow-md backdrop-blur-sm'
+                ? 'bg-white/90 border-orange-200 shadow-2xl shadow-orange-500/10 scale-[1.02]' 
+                : 'bg-white/40 hover:bg-white/80 border-white/40 hover:border-white hover:shadow-xl hover:shadow-stone-200/50 backdrop-blur-sm'
               }
             `}
           >
-            <div className="flex items-start gap-4 mb-4">
+            <div className="flex items-center gap-5 mb-5">
               {/* Logo / Placeholder */}
               <div className={`
-                shrink-0 w-14 h-14 rounded-xl border overflow-hidden flex items-center justify-center transition-colors
-                ${isActive ? 'bg-orange-50 border-orange-100' : 'bg-stone-50 border-stone-100 group-hover:bg-orange-50'}
+                shrink-0 w-16 h-16 rounded-2xl border overflow-hidden flex items-center justify-center transition-all duration-500 shadow-sm
+                ${isActive ? 'bg-orange-50 border-orange-100 rotate-3' : 'bg-white/50 border-white/60 group-hover:bg-orange-50 group-hover:rotate-3'}
               `}>
                  {logoUrl ? (
                    <img 
@@ -75,55 +75,46 @@ export const StationList: React.FC<StationListProps> = ({ stations, currentStati
                    />
                  ) : null}
                  <div className="hidden fallback-icon:flex w-full h-full items-center justify-center">
-                    <MusicNoteIcon className="w-6 h-6 text-stone-300" />
+                    <MusicNoteIcon className="w-8 h-8 text-stone-300" />
                  </div>
-                 {!logoUrl && <MusicNoteIcon className="w-6 h-6 text-stone-300" />}
+                 {!logoUrl && <MusicNoteIcon className="w-8 h-8 text-stone-300" />}
               </div>
 
-              <div className="flex-1 min-w-0 pt-0.5">
-                  <div className="flex justify-between items-start">
-                    <h3 className={`font-bold text-base truncate pr-2 ${isActive ? 'text-orange-600' : 'text-stone-800'}`}>
-                      {station.name}
-                    </h3>
-                     {isActive && (
-                        <div className="flex space-x-0.5 mt-2">
-                           <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce"></div>
-                           <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-75"></div>
-                           <div className="w-1 h-1 bg-orange-500 rounded-full animate-bounce delay-150"></div>
-                        </div>
-                      )}
-                  </div>
-                  <div className="text-xs font-medium text-stone-500 truncate mt-1 flex items-center">
+              <div className="flex-1 min-w-0">
+                  <h3 className={`font-bold text-lg truncate pr-2 transition-colors ${isActive ? 'text-orange-600' : 'text-stone-800'}`}>
+                    {station.name}
+                  </h3>
+                  <div className="text-xs font-semibold text-stone-500 truncate mt-1.5 flex items-center tracking-wide uppercase">
                       <GlobeIcon className="w-3.5 h-3.5 mr-1.5 text-stone-400" />
                       {station.location}
                   </div>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 mb-3">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
                <span className={`
-                 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold border
+                 px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-bold border transition-colors
                  ${isActive 
                    ? 'bg-orange-100 text-orange-700 border-orange-200' 
-                   : 'bg-stone-100 text-stone-500 border-stone-200 group-hover:bg-orange-50 group-hover:text-orange-600 group-hover:border-orange-100'
+                   : 'bg-white/50 text-stone-500 border-white group-hover:bg-orange-50 group-hover:text-orange-600 group-hover:border-orange-100'
                  }
                `}>
                 {station.genre}
               </span>
             </div>
 
-            <p className="text-stone-500 text-xs line-clamp-2 mb-2 leading-relaxed opacity-90">
+            <p className="text-stone-500 text-sm line-clamp-2 mb-2 leading-relaxed opacity-90 font-medium">
               {station.description}
             </p>
 
             <div className={`
-              absolute bottom-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg
+              absolute bottom-6 right-6 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 shadow-lg
               ${isActive 
-                ? 'bg-orange-500 text-white scale-100' 
-                : 'bg-stone-800 text-white opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 group-hover:bg-orange-500'
+                ? 'bg-orange-500 text-white translate-y-0 opacity-100' 
+                : 'bg-stone-900 text-white opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 group-hover:bg-orange-500'
               }
             `}>
-              <PlayIcon className="w-5 h-5 ml-0.5 fill-current" />
+              <PlayIcon className="w-6 h-6 ml-0.5 fill-current" />
             </div>
           </div>
         );

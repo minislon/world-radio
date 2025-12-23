@@ -63,7 +63,7 @@ export const StationMap: React.FC<StationMapProps> = ({ stations, currentStation
   };
 
   return (
-    <div className="h-72 sm:h-96 w-full rounded-2xl overflow-hidden relative z-0">
+    <div className="h-80 sm:h-[28rem] w-full bg-orange-50 relative z-0">
       <MapContainer 
         center={[20, 0]} 
         zoom={2} 
@@ -71,7 +71,7 @@ export const StationMap: React.FC<StationMapProps> = ({ stations, currentStation
         scrollWheelZoom={false}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
         
@@ -89,15 +89,15 @@ export const StationMap: React.FC<StationMapProps> = ({ stations, currentStation
               }}
             >
               <Popup className="custom-popup">
-                <div className="text-sm flex flex-col items-start gap-2 min-w-[150px]">
-                  {logoUrl && <img src={logoUrl} className="w-10 h-10 rounded-lg bg-orange-50 border border-orange-100 object-cover" alt="" />}
+                <div className="text-sm flex flex-col items-start gap-3 min-w-[160px] p-1">
+                  {logoUrl && <img src={logoUrl} className="w-12 h-12 rounded-xl bg-white border border-orange-100 object-cover shadow-sm" alt="" />}
                   <div className="w-full">
-                    <div className="font-bold text-stone-900 text-base">{station.name}</div>
-                    <div className="text-stone-500 text-xs font-medium uppercase">{station.location}</div>
+                    <div className="font-bold text-stone-900 text-base leading-tight">{station.name}</div>
+                    <div className="text-orange-600 text-[10px] font-bold uppercase tracking-widest mt-1">{station.location}</div>
                   </div>
                   <button 
                     onClick={() => onSelect(station)}
-                    className="mt-2 w-full bg-orange-500 text-white text-xs font-bold py-1.5 px-3 rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                    className="mt-1 w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-bold py-2 px-3 rounded-lg hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-md"
                   >
                     <span className="w-3 h-3"><PlayIcon className="fill-current" /></span>
                     Listen Live

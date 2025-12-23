@@ -4,7 +4,7 @@ import { Station, SearchResult } from './types';
 import { Player } from './components/Player';
 import { StationList } from './components/StationList';
 import { StationMap } from './components/StationMap';
-import { SearchIcon, SparklesIcon } from './components/Icons';
+import { SearchIcon, SparklesIcon, DiceIcon } from './components/Icons';
 import { BackgroundVisualizer, VisualizerMode } from './components/BackgroundVisualizer';
 
 // Default Data
@@ -79,6 +79,7 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [volume, setVolume] = useState(0.8);
   const [visualizerMode, setVisualizerMode] = useState<VisualizerMode>('bars');
 
   // Search
@@ -106,13 +107,18 @@ export default function App() {
     }
   };
 
+  const handleSurpriseMe = () => {
+    if (stations.length > 0) {
+        const randomStation = stations[Math.floor(Math.random() * stations.length)];
+        selectStation(randomStation);
+    }
+  };
+
   const selectStation = (station: Station) => {
     if (currentStation?.id === station.id) {
-        // Toggle play if same station
         togglePlay();
     } else {
         setCurrentStation(station);
-        // Effect will handle play start
     }
   };
 
@@ -141,14 +147,26 @@ export default function App() {
              else setAudioError("Unavailable");
           });
       }
+      
+      // Update Title
+      document.title = `▶ ${currentStation.name} | Aether Radio`;
+    } else {
+        document.title = "Aether Radio";
     }
   }, [currentStation]);
+
+  useEffect(() => {
+      if (audioRef.current) {
+          audioRef.current.volume = volume;
+      }
+  }, [volume]);
 
   const togglePlay = () => {
     if (!audioRef.current || !currentStation) return;
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
+      document.title = `${currentStation.name} | Aether Radio`;
     } else {
       setIsLoadingAudio(true);
       setAudioError(null);
@@ -156,6 +174,7 @@ export default function App() {
         .then(() => {
             setIsPlaying(true);
             setIsLoadingAudio(false);
+            document.title = `▶ ${currentStation.name} | Aether Radio`;
         })
         .catch(() => {
             setIsPlaying(false);
@@ -173,14 +192,14 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen text-stone-800 font-sans selection:bg-orange-300 selection:text-orange-900 overflow-x-hidden">
+    <div className="relative min-h-screen text-stone-800 font-sans selection:bg-orange-200 selection:text-orange-900 overflow-x-hidden">
       
       {/* Visualizer Layer (Fixed Background) */}
       <BackgroundVisualizer 
          audioRef={audioRef} 
          isPlaying={isPlaying} 
          mode={visualizerMode}
-         color="#f97316" // Orange 500
+         color="#fb923c" // Orange 400
       />
 
       {/* Hidden Audio Element */}
@@ -195,57 +214,68 @@ export default function App() {
       />
 
       {/* Main UI Layer */}
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col min-h-screen">
         
         {/* Header & Search */}
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-orange-100 py-4 px-4 sm:px-6 shadow-sm">
-          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <header className="sticky top-0 z-40 py-6 px-6 pointer-events-none">
+           {/* Center Content for Pointer Events */}
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 pointer-events-auto">
             
-            <div className="flex items-center space-x-2 self-start sm:self-auto cursor-default">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 text-white transform hover:rotate-3 transition-transform">
+            <div className="flex items-center space-x-3 self-start md:self-auto cursor-default group">
+              <div className="w-12 h-12 bg-white/40 backdrop-blur-md rounded-2xl border border-white/50 flex items-center justify-center shadow-lg shadow-orange-500/10 text-orange-600 transition-all group-hover:scale-105 group-hover:bg-white/60">
                 <span className="font-bold text-2xl leading-none tracking-tighter">Æ</span>
               </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight text-stone-800">
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-bold tracking-tight text-stone-800 leading-tight">
                   Aether Radio
                 </h1>
-                <p className="text-[10px] text-orange-600 font-medium tracking-widest uppercase">Expert Mode</p>
+                <p className="text-[10px] text-orange-600/80 font-bold tracking-[0.2em] uppercase">Expert Mode</p>
               </div>
             </div>
 
-            <form onSubmit={handleSearch} className="w-full sm:max-w-md relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon className="h-5 w-5 text-stone-400 group-focus-within:text-orange-500 transition-colors" />
-              </div>
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search worldwide (e.g., 'Jazz in Tokyo')"
-                className="block w-full rounded-2xl border border-orange-200/60 bg-white/60 backdrop-blur-sm py-3 pl-10 pr-4 text-sm text-stone-800 placeholder-stone-400 focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 focus:outline-none transition-all shadow-sm group-hover:bg-white"
-              />
-              {isSearching && (
-                <div className="absolute inset-y-0 right-3 flex items-center">
-                   <div className="w-4 h-4 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin"></div>
+            <div className="w-full md:max-w-lg flex items-center gap-2">
+                <form onSubmit={handleSearch} className="flex-1 relative group">
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <SearchIcon className="h-5 w-5 text-stone-400 group-focus-within:text-orange-500 transition-colors" />
                 </div>
-              )}
-            </form>
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search locations or genres..."
+                    className="block w-full rounded-full border-0 bg-white/50 backdrop-blur-md py-4 pl-14 pr-6 text-base text-stone-800 placeholder-stone-400 focus:bg-white focus:ring-4 focus:ring-orange-100 transition-all shadow-sm hover:shadow-md hover:bg-white/70"
+                />
+                {isSearching && (
+                    <div className="absolute inset-y-0 right-5 flex items-center">
+                    <div className="w-5 h-5 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin"></div>
+                    </div>
+                )}
+                </form>
+                
+                <button 
+                    onClick={handleSurpriseMe}
+                    className="h-14 w-14 rounded-full bg-white/50 hover:bg-white text-stone-500 hover:text-orange-500 flex items-center justify-center backdrop-blur-md shadow-sm transition-all hover:shadow-md active:scale-95 group"
+                    title="Surprise Me"
+                >
+                    <DiceIcon className="w-6 h-6 group-hover:rotate-180 transition-transform duration-500" />
+                </button>
+            </div>
 
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 pb-32">
+        <main className="max-w-7xl mx-auto px-6 w-full flex-grow pb-40">
           
           {/* Status Bar */}
-          <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div className="bg-white/40 backdrop-blur-md p-4 rounded-2xl border border-white/50 shadow-sm inline-block">
-              <h2 className="text-2xl font-bold text-stone-800 mb-1 flex items-center gap-2">
+          <div className="mt-8 mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+            <div className="">
+              <h2 className="text-3xl font-bold text-stone-800 mb-2 tracking-tight">
                 {isSearching ? 'Scanning frequencies...' : query ? `Results for "${query}"` : 'Global Frequencies'}
               </h2>
-              <p className="text-stone-500 text-sm font-medium">
+              <p className="text-stone-500 text-lg">
                 {isSearching 
-                  ? 'AI analyzing stream quality and locations...' 
+                  ? 'Locating best signals...' 
                   : query 
                     ? `Found ${stations.length} broadcasts.` 
                     : 'Discover live radio stations from around the world.'}
@@ -253,8 +283,8 @@ export default function App() {
             </div>
             
             {!isSearching && !query && (
-              <div className="flex items-center text-xs font-semibold text-orange-600 bg-orange-100/50 px-4 py-2 rounded-full border border-orange-200/60 backdrop-blur-md shadow-sm">
-                <SparklesIcon className="w-4 h-4 mr-1.5" />
+              <div className="flex items-center text-xs font-bold text-orange-600 bg-white/40 px-5 py-2.5 rounded-full border border-orange-100/50 backdrop-blur-sm shadow-sm">
+                <SparklesIcon className="w-4 h-4 mr-2" />
                 AI Enhanced • Sunny Profile
               </div>
             )}
@@ -262,7 +292,7 @@ export default function App() {
 
           {/* Map View */}
           {!isSearching && stations.length > 0 && (
-            <div className="mb-8 shadow-xl shadow-orange-900/5 rounded-2xl border border-white/60">
+            <div className="mb-12 shadow-2xl shadow-orange-900/5 rounded-3xl overflow-hidden border border-white/60 ring-4 ring-white/20">
               <StationMap 
                 stations={stations} 
                 currentStation={currentStation} 
@@ -281,21 +311,21 @@ export default function App() {
 
           {/* Grounding Sources */}
           {groundingLinks.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-orange-200/50 pb-8">
-                  <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-orange-400"></span>
+              <div className="mt-16 pt-10 border-t border-orange-200/30">
+                  <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6 flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
                     Verified Sources
                   </h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <ul className="flex flex-wrap gap-x-8 gap-y-3">
                       {groundingLinks.map((link, i) => (
                           <li key={i}>
                               <a 
                                   href={link} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="text-xs text-orange-600 hover:text-orange-800 hover:underline transition-colors flex items-center gap-1"
+                                  className="text-xs text-stone-500 hover:text-orange-600 transition-colors flex items-center gap-1.5 bg-white/30 px-3 py-1.5 rounded-lg border border-transparent hover:border-orange-100 hover:bg-white/60"
                               >
-                                  <span className="opacity-50">↗</span> {new URL(link).hostname}
+                                  {new URL(link).hostname} <span className="opacity-40">↗</span>
                               </a>
                           </li>
                       ))}
@@ -315,6 +345,8 @@ export default function App() {
         togglePlay={togglePlay}
         visualizerMode={visualizerMode}
         setVisualizerMode={setVisualizerMode}
+        volume={volume}
+        onVolumeChange={setVolume}
       />
 
     </div>

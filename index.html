@@ -19,18 +19,18 @@
       }
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
       }
       ::-webkit-scrollbar-track {
         background: transparent; 
       }
       ::-webkit-scrollbar-thumb {
-        background: #fdba74; /* Orange 300 */
-        border-radius: 4px;
+        background: rgba(251, 146, 60, 0.5); /* Orange 400 */
+        border-radius: 99px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #f97316; /* Orange 500 */
+        background: rgba(249, 115, 22, 0.8); /* Orange 500 */
       }
       
       /* Leaflet override for light theme */
@@ -41,9 +41,9 @@
       .leaflet-popup-content-wrapper {
         background: rgba(255, 255, 255, 0.95);
         color: #1c1917;
-        border: 1px solid rgba(249, 115, 22, 0.2);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        border-radius: 12px;
+        border: 1px solid rgba(249, 115, 22, 0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
       }
       .leaflet-popup-tip {
         background: rgba(255, 255, 255, 0.95);
@@ -57,7 +57,7 @@
         height: 100%;
         z-index: 0;
         pointer-events: none;
-        opacity: 0.6;
+        opacity: 0.25; /* Subtle airy feel */
       }
     </style>
   <script type="importmap">
