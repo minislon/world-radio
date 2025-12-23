@@ -1,0 +1,5 @@
+{
+  "name": "Aether Radio",
+  "description": "A minimalist worldwide radio player powered by Gemini Search Grounding to discover live stations from around the globe.",
+  "requestFramePermissions": []
+}
